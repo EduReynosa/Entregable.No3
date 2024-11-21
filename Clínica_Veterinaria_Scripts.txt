@@ -1,0 +1,88 @@
+
+# Script SQL
+
+CREATE DATABASE Veterinaria;
+USE Veterinaria;
+
+-- Tabla Clientes
+CREATE TABLE Clientes (
+    ClienteID INT AUTO_INCREMENT PRIMARY KEY,
+    Apellido VARCHAR(100),
+    CuentaBancaria VARCHAR(50),
+    Direccion VARCHAR(255),
+    Telefono VARCHAR(15)
+);
+
+-- Tabla Personas
+CREATE TABLE Personas (
+    PersonaID INT AUTO_INCREMENT PRIMARY KEY,
+    NombreCompleto VARCHAR(100),
+    Cedula VARCHAR(20) UNIQUE,
+    ClienteID INT,
+    FOREIGN KEY (ClienteID) REFERENCES Clientes(ClienteID)
+);
+
+-- Tabla Mascotas
+CREATE TABLE Mascotas (
+    MascotaID INT AUTO_INCREMENT PRIMARY KEY,
+    Alias VARCHAR(50),
+    Especie VARCHAR(50),
+    Raza VARCHAR(50),
+    ColorPelo VARCHAR(50),
+    FechaNacimiento DATE,
+    PesoActual DECIMAL(5, 2),
+    ClienteID INT,
+    FOREIGN KEY (ClienteID) REFERENCES Clientes(ClienteID)
+);
+
+-- Tabla Historial Médico
+CREATE TABLE HistorialMedico (
+    HistorialID INT AUTO_INCREMENT PRIMARY KEY,
+    MascotaID INT,
+    Fecha DATE,
+    Detalles TEXT,
+    FOREIGN KEY (MascotaID) REFERENCES Mascotas(MascotaID)
+);
+
+-- Tabla Vacunaciones
+CREATE TABLE Vacunaciones (
+    VacunacionID INT AUTO_INCREMENT PRIMARY KEY,
+    MascotaID INT,
+    Fecha DATE,
+    Enfermedad VARCHAR(100),
+    FOREIGN KEY (MascotaID) REFERENCES Mascotas(MascotaID)
+);
+
+-- Tabla Citas
+CREATE TABLE Citas (
+    CitaID INT AUTO_INCREMENT PRIMARY KEY,
+    ClienteID INT,
+    Fecha DATE,
+    Hora TIME,
+    Motivo TEXT,
+    Resultado TEXT,
+    FOREIGN KEY (ClienteID) REFERENCES Clientes(ClienteID)
+);
+
+
+# Script Python
+
+import mysql.connector
+
+# Conexión a la base de datos
+db = mysql.connector.connect(
+    host="localhost",
+    user="tu_usuario",
+    password="tu_contraseña",
+    database="Veterinaria"
+)
+
+cursor = db.cursor()
+
+# Ejemplo: Insertar un cliente
+sql = "INSERT INTO Clientes (Apellido, CuentaBancaria, Direccion, Telefono) VALUES (%s, %s, %s, %s)"
+valores = ("González", "123456789", "Calle 123", "555123456")
+cursor.execute(sql, valores)
+db.commit()
+
+print(cursor.rowcount, "registro(s) insertado(s).")
